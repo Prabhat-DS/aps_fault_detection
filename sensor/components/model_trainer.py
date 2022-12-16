@@ -10,35 +10,37 @@ from sklearn.metrics import f1_score
 
 class ModelTrainer:
 
+
     def __init__(self,model_trainer_config:config_entity.ModelTrainerConfig,
-                    data_transformation_artifact:artifact_entity.DataTransformationArtifact):
+                data_transformation_artifact:artifact_entity.DataTransformationArtifact
+                ):
         try:
             logging.info(f"{'>>'*20} Model Trainer {'<<'*20}")
-            self.model_trainer_config= model_trainer_config
-            self.data_transformation_artifact= data_transformation_artifact
-        
-        except Exception as e :
-            raise SensorException(e, sys)
-
-
-    def fine_tune(self,x,y):
-        try:
-            pass
-        except Exception as e :
-            raise SensorException(e, sys)
-        
-
-    def train_object(self, x, y):
-        try:
-            xgb_clf= XGBClassifier()
-            xgb_clf.fit(x,y)
-            return xgb_clf
+            self.model_trainer_config=model_trainer_config
+            self.data_transformation_artifact=data_transformation_artifact
 
         except Exception as e:
             raise SensorException(e, sys)
 
+    def fine_tune(self):
+        try:
+            #Wite code for Grid Search CV
+            pass
+            
 
-    def initiat_model_trainer(self,)->artifact_entity.ModelTrainerArtifact:
+        except Exception as e:
+            raise SensorException(e, sys)
+
+    def train_model(self,x,y):
+        try:
+            xgb_clf =  XGBClassifier()
+            xgb_clf.fit(x,y)
+            return xgb_clf
+        except Exception as e:
+            raise SensorException(e, sys)
+
+
+    def initiate_model_trainer(self,)->artifact_entity.ModelTrainerArtifact:
         try:
             logging.info(f"Loading train and test array.")
             train_arr = utils.load_numpy_array_data(file_path=self.data_transformation_artifact.transformed_train_path)
@@ -61,9 +63,6 @@ class ModelTrainer:
             
             logging.info(f"train score:{f1_train_score} and tests score {f1_test_score}")
             #check for overfitting or underfiiting or expected score
-            # if the we get acuracy in train data but not in test data-->overfiting
-            # if the we do not get acuracy in train data and in test data both -->overfiting
-            # expected pre-defing score by us--> expected score
             logging.info(f"Checking if our model is underfitting or not")
             if f1_test_score<self.model_trainer_config.expected_score:
                 raise Exception(f"Model is not good as it is not able to give \
@@ -87,5 +86,7 @@ class ModelTrainer:
             return model_trainer_artifact
         except Exception as e:
             raise SensorException(e, sys)
+
+
 
 
